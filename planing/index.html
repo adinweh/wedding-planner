@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Wedding Journey - Real-Time Perencanaan & Tabungan Pernikahan</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'rose-bg': '#FFF5F6',
+                        'rose-card': '#FFFFFF',
+                        'rose-accent': '#E11D48',
+                        'rose-dark': '#881337',
+                        'teal-accent': '#0D9488',
+                        'teal-dark': '#0F766E',
+                        'teal-soft': '#CCFBF1',
+                    },
+                    fontFamily: {
+                        'cursive': ['"Great Vibes"', 'cursive'],
+                        'sans': ['"Poppins"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #FFF5F6;
+            font-family: 'Poppins', sans-serif;
+            color: #334155;
+        }
+        .font-cursive {
+            font-family: 'Great Vibes', cursive;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #FFE4E6;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #FDA4AF;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #F43F5E;
+        }
+        /* Smooth tab transition */
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-rose-200 selection:text-rose-900">
+
+    <!-- Sync Banner & Header Section -->
+    <header class="pt-6 pb-6 px-4 text-center">
+        <div class="max-w-4xl mx-auto flex flex-col items-center">
+            
+            <!-- Sync & Couple ID Bar -->
+            <div class="flex flex-wrap items-center justify-center gap-2 mb-4">
+                <div class="inline-flex items-center gap-2 bg-rose-100 text-rose-700 px-3.5 py-1.5 rounded-full text-xs font-semibold border border-rose-200 shadow-xs">
+                    <i data-lucide="heart" class="w-4 h-4 fill-rose-500 text-rose-500 animate-pulse"></i>
+                    <span>Target: <strong id="headerTargetDateDisplay">September 2028</strong></span>
+                </div>
+
+                <div id="syncStatusBadge" class="inline-flex items-center gap-1.5 bg-emerald-100 text-emerald-800 px-3 py-1.5 rounded-full text-xs font-medium border border-emerald-200 shadow-xs">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                    <span id="syncStatusText">Tersinkronisasi Real-Time</span>
+                </div>
+
+                <button onclick="openModal('modalShare')" class="inline-flex items-center gap-1.5 bg-white text-slate-700 hover:text-rose-600 px-3 py-1.5 rounded-full text-xs font-semibold border border-rose-200 shadow-xs transition cursor-pointer">
+                    <i data-lucide="share-2" class="w-3.5 h-3.5 text-rose-500"></i>
+                    <span>ID Pasangan: <strong id="displayWeddingId" class="font-mono text-rose-600">...</strong></span>
+                </button>
+            </div>
+
+            <!-- Main Title -->
+            <h1 class="font-cursive text-5xl sm:text-6xl md:text-7xl text-rose-600 mb-2 drop-shadow-sm">
+                Our Wedding Journey
+            </h1>
+            
+            <p class="text-xs sm:text-sm text-slate-600 font-medium max-w-md mx-auto mb-6">
+                Perencanaan & Tabungan Pernikahan Impian <span class="text-rose-600 font-bold" id="headerTargetBudgetDisplay">Rp 50.000.000</span>
+            </p>
+
+            <!-- Live Countdown Timer -->
+            <div class="grid grid-cols-4 gap-2 sm:gap-4 max-w-md w-full px-2">
+                <div class="bg-white rounded-2xl p-2 sm:p-3 text-center border border-rose-100 shadow-xs hover:shadow-md transition">
+                    <span id="cd-days" class="block text-xl sm:text-3xl font-bold text-rose-600">000</span>
+                    <span class="text-[10px] sm:text-xs text-slate-400 font-semibold tracking-wider">HARI</span>
+                </div>
+                <div class="bg-white rounded-2xl p-2 sm:p-3 text-center border border-rose-100 shadow-xs hover:shadow-md transition">
+                    <span id="cd-hours" class="block text-xl sm:text-3xl font-bold text-rose-600">00</span>
+                    <span class="text-[10px] sm:text-xs text-slate-400 font-semibold tracking-wider">JAM</span>
+                </div>
+                <div class="bg-white rounded-2xl p-2 sm:p-3 text-center border border-rose-100 shadow-xs hover:shadow-md transition">
+                    <span id="cd-minutes" class="block text-xl sm:text-3xl font-bold text-rose-600">00</span>
+                    <span class="text-[10px] sm:text-xs text-slate-400 font-semibold tracking-wider">MENIT</span>
+                </div>
+                <div class="bg-white rounded-2xl p-2 sm:p-3 text-center border border-rose-100 shadow-xs hover:shadow-md transition">
+                    <span id="cd-seconds" class="block text-xl sm:text-3xl font-bold text-rose-600">00</span>
+                    <span class="text-[10px] sm:text-xs text-slate-400 font-semibold tracking-wider">DETIK</span>
+                </div>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-5xl mx-auto px-4 w-full flex-grow mb-12">
+
+        <!-- Top Dashboard Cards Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            
+            <!-- Card 1: Target Budget -->
+            <div class="bg-white rounded-2xl p-4 border border-rose-100 shadow-xs flex flex-col justify-between hover:shadow-md transition relative">
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-[11px] font-bold text-rose-400 tracking-wider">TARGET BUDGET</span>
+                        <i data-lucide="wallet" class="w-4 h-4 text-rose-400"></i>
+                    </div>
+                    <div id="cardTargetBudget" class="text-xl sm:text-2xl font-bold text-slate-800">Rp 50.000.000</div>
+                    <p class="text-xs text-slate-400 mt-1">Total estimasi biaya</p>
+                </div>
+                <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center text-xs">
+                    <span class="text-slate-500">Ter-alokasi:</span>
+                    <span id="cardAllocatedBudget" class="font-bold text-rose-600">Rp 0</span>
+                </div>
+            </div>
+
+            <!-- Card 2: Total Tabungan -->
+            <div class="bg-white rounded-2xl p-4 border border-teal-100 shadow-xs flex flex-col justify-between hover:shadow-md transition">
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-[11px] font-bold text-teal-600 tracking-wider">TOTAL TABUNGAN</span>
+                        <i data-lucide="piggy-bank" class="w-4 h-4 text-teal-500"></i>
+                    </div>
+                    <div id="cardTotalSavings" class="text-xl sm:text-2xl font-bold text-teal-700">Rp 0</div>
+                    <p class="text-xs text-teal-600/70 mt-1">Sudah terkumpul</p>
+                </div>
+                <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center text-xs">
+                    <span class="text-slate-500">Kurang:</span>
+                    <span id="cardRemainingSavings" class="font-bold text-amber-600">Rp 50.000.000</span>
+                </div>
+            </div>
+
+            <!-- Card 3: Checklist & Persiapan -->
+            <div class="bg-white rounded-2xl p-4 border border-rose-100 shadow-xs flex flex-col justify-between hover:shadow-md transition">
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-[11px] font-bold text-rose-500 tracking-wider">CHECKLIST & PERSIAPAN</span>
+                        <i data-lucide="check-square" class="w-4 h-4 text-rose-500"></i>
+                    </div>
+                    <div class="flex items-baseline gap-2">
+                        <div id="cardChecklistPercent" class="text-xl sm:text-2xl font-bold text-rose-600">0%</div>
+                        <span id="cardChecklistCount" class="text-xs text-slate-500 font-medium">0/0 Selesai</span>
+                    </div>
+                    <!-- Mini Progress Bar -->
+                    <div class="w-full bg-slate-100 rounded-full h-2 mt-2 overflow-hidden">
+                        <div id="cardChecklistBar" class="bg-rose-500 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center text-xs">
+                    <span class="text-slate-500">Status Timeline:</span>
+                    <span id="cardChecklistStatus" class="font-bold text-emerald-600">On Track</span>
+                </div>
+            </div>
+
+            <!-- Card 4: Progress Tabungan -->
+            <div class="bg-white rounded-2xl p-4 border border-rose-100 shadow-xs flex flex-col justify-between hover:shadow-md transition">
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-[11px] font-bold text-rose-400 tracking-wider">PROGRESS TABUNGAN</span>
+                        <i data-lucide="trending-up" class="w-4 h-4 text-rose-400"></i>
+                    </div>
+                    <div class="flex items-baseline justify-between">
+                        <div id="cardSavingsPercent" class="text-xl sm:text-2xl font-bold text-slate-800">0%</div>
+                        <span id="cardDepositCount" class="text-xs text-slate-400">0 setoran</span>
+                    </div>
+                    <!-- Progress Bar -->
+                    <div class="w-full bg-slate-100 rounded-full h-2 mt-2 overflow-hidden">
+                        <div id="cardSavingsBar" class="bg-teal-500 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center text-xs">
+                    <span class="text-slate-500">Status Sync:</span>
+                    <span class="inline-flex items-center gap-1 text-emerald-600 font-medium">
+                        <i data-lucide="cloud" class="w-3.5 h-3.5"></i> Cloud Realtime
+                    </span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Tab Navigation Buttons -->
+        <div class="bg-rose-100/70 p-1.5 rounded-2xl mb-6 flex flex-wrap sm:flex-nowrap gap-1 border border-rose-200/60">
+            <button onclick="switchTab('tabungan')" id="tabBtn-tabungan" class="tab-btn flex-1 py-2.5 px-4 rounded-xl font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 transition bg-white text-rose-600 shadow-xs cursor-pointer">
+                <i data-lucide="coins" class="w-4 h-4"></i>
+                <span>Tabungan</span>
+            </button>
+            <button onclick="switchTab('rincian')" id="tabBtn-rincian" class="tab-btn flex-1 py-2.5 px-4 rounded-xl font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 transition text-slate-600 hover:text-rose-600 cursor-pointer">
+                <i data-lucide="calculator" class="w-4 h-4"></i>
+                <span>Rincian Biaya</span>
+            </button>
+            <button onclick="switchTab('checklist')" id="tabBtn-checklist" class="tab-btn flex-1 py-2.5 px-4 rounded-xl font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 transition text-slate-600 hover:text-rose-600 cursor-pointer">
+                <i data-lucide="list-checks" class="w-4 h-4"></i>
+                <span>Checklist & Timeline</span>
+            </button>
+        </div>
+
+        <!-- TAB 1: TABUNGAN -->
+        <div id="tab-tabungan" class="tab-content active space-y-4">
+            <div class="bg-white rounded-2xl border border-teal-200 shadow-xs overflow-hidden">
+                <div class="p-4 sm:p-6 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <div class="p-2 bg-teal-50 text-teal-600 rounded-xl">
+                                <i data-lucide="piggy-bank" class="w-5 h-5"></i>
+                            </div>
+                            <h2 class="text-lg font-bold text-slate-800">Riwayat & Progress Tabungan</h2>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-1">Catat setiap uang yang ditabung menuju target impian Anda.</p>
+                    </div>
+                    <button onclick="openModal('modalSavings')" class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2.5 rounded-xl font-semibold text-xs sm:text-sm inline-flex items-center justify-center gap-2 shadow-xs shadow-teal-200 transition cursor-pointer">
+                        <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                        <span>Tambah Setoran</span>
+                    </button>
+                </div>
+
+                <!-- Table Savings List -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs sm:text-sm">
+                        <thead class="bg-teal-50/50 text-slate-600 font-semibold border-b border-teal-100">
+                            <tr>
+                                <th class="py-3 px-4 sm:px-6">Tanggal</th>
+                                <th class="py-3 px-4 sm:px-6">Sumber Dana / Keterangan</th>
+                                <th class="py-3 px-4 sm:px-6">Jumlah Setoran</th>
+                                <th class="py-3 px-4 sm:px-6 text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="savingsTableBody" class="divide-y divide-slate-100">
+                            <!-- Dynamic Content Inserted Here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: RINCIAN BIAYA -->
+        <div id="tab-rincian" class="tab-content space-y-4">
+            <div class="bg-white rounded-2xl border border-rose-200 shadow-xs p-4 sm:p-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <div class="p-2 bg-rose-50 text-rose-600 rounded-xl">
+                                <i data-lucide="calculator" class="w-5 h-5"></i>
+                            </div>
+                            <h2 class="text-lg font-bold text-slate-800">Rincian Estimasi Biaya</h2>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-1">Kelola kebutuhan vendor dan alokasi dana pernikahan.</p>
+                    </div>
+                    <button onclick="openModal('modalExpense')" class="bg-rose-600 hover:bg-rose-700 text-white px-4 py-2.5 rounded-xl font-semibold text-xs sm:text-sm inline-flex items-center justify-center gap-2 shadow-xs shadow-rose-200 transition cursor-pointer">
+                        <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                        <span>Tambah Kebutuhan</span>
+                    </button>
+                </div>
+
+                <!-- Expense Categories Container -->
+                <div id="expenseCategoriesContainer" class="space-y-6">
+                    <!-- Dynamic Content Inserted Here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: CHECKLIST & TIMELINE -->
+        <div id="tab-checklist" class="tab-content space-y-4">
+            <div class="bg-white rounded-2xl border border-rose-200 shadow-xs p-4 sm:p-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <div class="p-2 bg-rose-50 text-rose-600 rounded-xl">
+                                <i data-lucide="check-square" class="w-5 h-5"></i>
+                            </div>
+                            <h2 class="text-lg font-bold text-slate-800">Checklist Persiapan & Timeline</h2>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-1">Tandai progress persiapan acara. Data tersimpan secara otomatis secara real-time di semua perangkat!</p>
+                    </div>
+                    <button onclick="openModal('modalChecklist')" class="bg-rose-600 hover:bg-rose-700 text-white px-4 py-2.5 rounded-xl font-semibold text-xs sm:text-sm inline-flex items-center justify-center gap-2 shadow-xs shadow-rose-200 transition cursor-pointer">
+                        <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                        <span>Tambah Item Checklist</span>
+                    </button>
+                </div>
+
+                <!-- Timeline Accordion / List -->
+                <div id="checklistTimelineContainer" class="space-y-6">
+                    <!-- Dynamic Content Inserted Here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings & Sync Controls Bar -->
+        <div class="mt-8 pt-4 border-t border-rose-200/60 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-500">
+            <div class="flex items-center gap-2">
+                <i data-lucide="cloud-check" class="w-4 h-4 text-emerald-600"></i>
+                <span>Database Sync: <strong id="cloudSyncStatus" class="text-slate-700">Terhubung Cloud Firestore</strong></span>
+            </div>
+            <div class="flex items-center gap-3">
+                <button onclick="openModal('modalShare')" class="hover:text-rose-600 font-medium text-teal-700 transition flex items-center gap-1 cursor-pointer">
+                    <i data-lucide="share-2" class="w-3.5 h-3.5"></i> Hubungkan HP Lain / Pasangan
+                </button>
+                <span>•</span>
+                <button onclick="openModal('modalSettings')" class="hover:text-rose-600 font-medium transition flex items-center gap-1 cursor-pointer">
+                    <i data-lucide="settings" class="w-3.5 h-3.5"></i> Pengaturan Target
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center py-6 text-xs text-slate-400 border-t border-rose-100 bg-white">
+        <p>© Our Wedding Journey • Terhubung antar browser & HP secara Real-Time</p>
+    </footer>
+
+    <!-- MODALS -->
+
+    <!-- Modal Share / Link ID Pasangan -->
+    <div id="modalShare" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-rose-100">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
+                    <i data-lucide="share-2" class="w-4 h-4 text-rose-500"></i> Sinkronkan dengan HP Pasangan
+                </h3>
+                <button onclick="closeModal('modalShare')" class="text-slate-400 hover:text-slate-600 cursor-pointer">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            
+            <p class="text-xs text-slate-600 mb-4 leading-relaxed">
+                Gunakan ID Pasangan ini di HP atau browser pasangan Anda. Setiap centang checklist atau setoran tabungan akan terupdate otomatis secara **real-time** di kedua layar!
+            </p>
+
+            <div class="mb-4">
+                <label class="block text-xs font-semibold text-slate-600 mb-1">ID Pernikahan Anda:</label>
+                <div class="flex gap-2">
+                    <input type="text" id="shareWeddingIdInput" readonly class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm font-mono text-rose-600 font-bold focus:outline-none">
+                    <button onclick="copyShareLink()" class="bg-rose-600 hover:bg-rose-700 text-white px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1 transition cursor-pointer">
+                        <i data-lucide="copy" class="w-3.5 h-3.5"></i> Salin
+                    </button>
+                </div>
+            </div>
+
+            <hr class="border-slate-100 my-4">
+
+            <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1">Punya Kode ID dari Pasangan?</label>
+                <form onsubmit="handleJoinWedding(event)" class="flex gap-2">
+                    <input type="text" id="joinWeddingIdInput" placeholder="Masukkan ID Pernikahan..." required class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-rose-500 uppercase font-mono">
+                    <button type="submit" class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-xl text-xs font-semibold transition whitespace-nowrap cursor-pointer">
+                        Hubungkan
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 1: Tambah / Edit Setoran Tabungan -->
+    <div id="modalSavings" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-rose-100">
+            <div class="flex justify-between items-center mb-4">
+                <h3 id="modalSavingsTitle" class="text-base font-bold text-slate-800">Tambah Setoran Tabungan</h3>
+                <button onclick="closeModal('modalSavings')" class="text-slate-400 hover:text-slate-600 cursor-pointer">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <form id="savingsForm" onsubmit="handleSaveSavings(event)" class="space-y-4">
+                <input type="hidden" id="savingsId">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Tanggal</label>
+                    <input type="date" id="savingsDate" required class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-teal-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Sumber Dana / Keterangan</label>
+                    <input type="text" id="savingsNote" placeholder="contoh: Gaji Bulan Oktober" required class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-teal-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Jumlah Setoran (Rp)</label>
+                    <input type="number" id="savingsAmount" min="1" placeholder="1000000" required class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-teal-500">
+                </div>
+                <div class="flex gap-2 pt-2">
+                    <button type="button" onclick="closeModal('modalSavings')" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs sm:text-sm font-semibold transition cursor-pointer">Batal</button>
+                    <button type="submit" class="flex-1 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs sm:text-sm font-semibold transition cursor-pointer">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 2: Tambah Kebutuhan Biaya -->
+    <div id="modalExpense" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-rose-100">
+            <div class="flex justify-between items-center mb-4">
+                <h3 id="modalExpenseTitle" class="text-base font-bold text-slate-800">Tambah Item Biaya</h3>
+                <button onclick="closeModal('modalExpense')" class="text-slate-400 hover:text-slate-600 cursor-pointer">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <form id="expenseForm" onsubmit="handleSaveExpense(event)" class="space-y-4">
+                <input type="hidden" id="expenseId">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Kategori</label>
+                    <select id="expenseCategory" required class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-rose-500">
+                        <option value="Venue & Catering">Venue & Catering</option>
+                        <option value="Busana & Makeup">Busana & Makeup</option>
+                        <option value="Dekorasi & Dokumen">Dekorasi & Dokumen</option>
+                        <option value="Undangan & Souvenir">Undangan & Souvenir</option>
+                        <option value="Lain-Lain">Lain-Lain</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Nama Kebutuhan</label>
+                    <input type="text" id="expenseName" placeholder="contoh: Sewa Gedung & Catering 300 Pax" required class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-rose-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Estimasi Biaya (Rp)</label>
+                    <input type="number" id="expenseAmount" min="0" placeholder="25000000" required class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-rose-500">
+                </div>
+                <div class="flex gap-2 pt-2">
+                    <button type="button" onclick="closeModal('modalExpense')" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs sm:text-sm font-semibold transition cursor-pointer">Batal</button>
+                    <button type="submit" class="flex-1 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs sm:text-sm font-semibold transition cursor-pointer">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 3: Tambah Item Checklist -->
+    <div id="modalChecklist" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-rose-100">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-base font-bold text-slate-800">Tambah Item Checklist</h3>
+                <button onclick="closeModal('modalChecklist')" class="text-slate-400 hover:text-slate-600 cursor-pointer">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <form id="checklistForm" onsubmit="handleSaveChecklist(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Tahapan / Timeline</label>
+                    <select id="checklistTimeline" required class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-rose-500">
+                        <option value="H-12 Bulan">H-12 Bulan</option>
+                        <option value="H-6 Bulan">H-6 Bulan</option>
+                        <option value="H-3 Bulan">H-3 Bulan</option>
+                        <option value="H-1 Bulan">H-1 Bulan</option>
+                        <option value="H-1 Minggu & Hari H">H-1 Minggu & Hari H</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Tugas / Persiapan</label>
+                    <input type="text" id="checklistTask" placeholder="contoh: Fitting baju pengantin akhir" required class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-rose-500">
+                </div>
+                <div class="flex gap-2 pt-2">
+                    <button type="button" onclick="closeModal('modalChecklist')" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs sm:text-sm font-semibold transition cursor-pointer">Batal</button>
+                    <button type="submit" class="flex-1 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs sm:text-sm font-semibold transition cursor-pointer">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 4: Pengaturan Target -->
+    <div id="modalSettings" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-rose-100">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-base font-bold text-slate-800">Pengaturan Target Acara</h3>
+                <button onclick="closeModal('modalSettings')" class="text-slate-400 hover:text-slate-600 cursor-pointer">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <form id="settingsForm" onsubmit="handleSaveSettings(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Target Total Budget (Rp)</label>
+                    <input type="number" id="settingTargetBudget" min="1000000" step="500000" required class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-rose-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Tanggal Target Pernikahan</label>
+                    <input type="date" id="settingTargetDate" required class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-rose-500">
+                </div>
+                <div class="flex gap-2 pt-2">
+                    <button type="button" onclick="closeModal('modalSettings')" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs sm:text-sm font-semibold transition cursor-pointer">Batal</button>
+                    <button type="submit" class="flex-1 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs sm:text-sm font-semibold transition cursor-pointer">Simpan Pengaturan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Custom Notification Toast -->
+    <div id="toast" class="fixed bottom-4 right-4 bg-slate-800 text-white px-4 py-2.5 rounded-xl text-xs shadow-lg flex items-center gap-2 transform translate-y-20 opacity-0 transition-all duration-300 z-50">
+        <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i>
+        <span id="toastMsg">Notifikasi</span>
+    </div>
+
+    <!-- FIREBASE REALTIME ENGINE SCRIPT -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // APP DEFAULTS
+        const DEFAULT_CONFIG = {
+            targetBudget: 50000000,
+            targetDate: "2028-09-01"
+        };
+
+        const DEFAULT_SAVINGS = [
+            { id: "s1", date: "2026-10-07", note: "Gaji bulan Oktober", amount: 1000000 }
+        ];
+
+        const DEFAULT_EXPENSES = [
+            { id: "e1", category: "Venue & Catering", name: "Sewa Gedung & Catering 300 pax", amount: 25000000 },
+            { id: "e2", category: "Busana & Makeup", name: "Busana & MUA Pengantin + Orang Tua", amount: 10000000 },
+            { id: "e3", category: "Dekorasi & Dokumen", name: "Dekorasi Pelaminan & Foto/Video", amount: 10000000 },
+            { id: "e4", category: "Undangan & Souvenir", name: "Undangan Digital & Souvenir", amount: 3000000 },
+            { id: "e5", category: "Lain-Lain", name: "Dana Darurat & Biaya KUA", amount: 2000000 }
+        ];
+
+        const DEFAULT_CHECKLIST = [
+            { id: "c1", timeline: "H-12 Bulan", task: "Diskusi konsep & anggaran awal dengan keluarga", done: true },
+            { id: "c2", timeline: "H-12 Bulan", task: "Menentukan tanggal impian & booking lokasi venue", done: true },
+            { id: "c3", timeline: "H-6 Bulan", task: "DP Catering & Dekorasi", done: true },
+            { id: "c4", timeline: "H-6 Bulan", task: "Memilih busana pengantin & MUA", done: true },
+            { id: "c5", timeline: "H-3 Bulan", task: "Mengurus berkas pendaftaran di KUA", done: false },
+            { id: "c6", timeline: "H-3 Bulan", task: "Pemesanan undangan & souvenir", done: false },
+            { id: "c7", timeline: "H-1 Bulan", task: "Sesi foto Prewedding / Technical meeting vendor", done: false },
+            { id: "c8", timeline: "H-1 Bulan", task: "Penyebaran undangan ke tamu", done: false },
+            { id: "c9", timeline: "H-1 Minggu & Hari H", task: "Gladi bersih & Konfirmasi final semua vendor", done: false }
+        ];
+
+        // Global State Variables
+        window.appConfig = { ...DEFAULT_CONFIG };
+        window.savingsData = [ ...DEFAULT_SAVINGS ];
+        window.expensesData = [ ...DEFAULT_EXPENSES ];
+        window.checklistData = [ ...DEFAULT_CHECKLIST ];
+
+        // Extract Wedding ID from URL or generate unique one
+        const urlParams = new URLSearchParams(window.location.search);
+        let weddingId = urlParams.get('weddingId');
+
+        if (!weddingId) {
+            weddingId = localStorage.getItem('owj_weddingId');
+            if (!weddingId) {
+                weddingId = 'WED-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+                localStorage.setItem('owj_weddingId', weddingId);
+            }
+        } else {
+            localStorage.setItem('owj_weddingId', weddingId);
+        }
+
+        window.currentWeddingId = weddingId;
+
+        // Firebase Configuration
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+            apiKey: "demo-api-key",
+            authDomain: "demo-project.firebaseapp.com",
+            projectId: "demo-project",
+            storageBucket: "demo-project.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "1:123456789:web:demo"
+        };
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'our-wedding-journey';
+        
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let unbindFirestoreListener = null;
+
+        // Authenticate User
+        async function authenticateAndInit() {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (e) {
+                console.warn("Auth error, fallback to offline local mode:", e);
+            }
+        }
+
+        // Setup Realtime Sync Listener
+        function listenToWeddingData() {
+            if (unbindFirestoreListener) unbindFirestoreListener();
+
+            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'weddings', window.currentWeddingId);
+
+            unbindFirestoreListener = onSnapshot(docRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    if (data.config) window.appConfig = data.config;
+                    if (data.savings) window.savingsData = data.savings;
+                    if (data.expenses) window.expensesData = data.expenses;
+                    if (data.checklist) window.checklistData = data.checklist;
+
+                    updateSyncBadge(true);
+                } else {
+                    // Initialize DB document if first time opening this ID
+                    saveDataToCloud();
+                }
+                window.renderAll();
+            }, (err) => {
+                console.error("Firestore listener error:", err);
+                updateSyncBadge(false);
+            });
+        }
+
+        // Save State to Firestore
+        window.saveDataToCloud = async function() {
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'weddings', window.currentWeddingId);
+                await setDoc(docRef, {
+                    config: window.appConfig,
+                    savings: window.savingsData,
+                    expenses: window.expensesData,
+                    checklist: window.checklistData,
+                    updatedAt: new Date().toISOString()
+                }, { merge: true });
+
+                updateSyncBadge(true);
+            } catch (err) {
+                console.error("Error saving data to Firestore:", err);
+                updateSyncBadge(false);
+            }
+            window.renderAll();
+        };
+
+        function updateSyncBadge(isLive) {
+            const badge = document.getElementById('syncStatusBadge');
+            const statusText = document.getElementById('syncStatusText');
+            const cloudText = document.getElementById('cloudSyncStatus');
+
+            if (isLive) {
+                badge.className = "inline-flex items-center gap-1.5 bg-emerald-100 text-emerald-800 px-3 py-1.5 rounded-full text-xs font-medium border border-emerald-200 shadow-xs";
+                statusText.innerText = "SINKRON REAL-TIME";
+                if(cloudText) cloudText.innerText = "Terhubung Cloud (Real-time)";
+            } else {
+                badge.className = "inline-flex items-center gap-1.5 bg-amber-100 text-amber-800 px-3 py-1.5 rounded-full text-xs font-medium border border-amber-200 shadow-xs";
+                statusText.innerText = "Offline Mode";
+                if(cloudText) cloudText.innerText = "Mode Lokal / Offline";
+            }
+        }
+
+        // INITIALIZATION ON LOAD
+        window.addEventListener('load', async () => {
+            document.getElementById('displayWeddingId').innerText = window.currentWeddingId;
+            document.getElementById('shareWeddingIdInput').value = window.currentWeddingId;
+
+            await authenticateAndInit();
+            listenToWeddingData();
+            
+            setInterval(window.updateCountdown, 1000);
+            window.updateCountdown();
+        });
+    </script>
+
+    <!-- UI APPLICATION LOGIC -->
+    <script>
+        // FORMAT CURRENCY
+        function formatRupiah(amount) {
+            return 'Rp ' + Number(amount).toLocaleString('id-ID');
+        }
+
+        // FORMAT DATE
+        function formatDate(dateStr) {
+            if(!dateStr) return '';
+            const options = { day: 'numeric', month: 'short', year: 'numeric' };
+            return new Date(dateStr).toLocaleDateString('id-ID', options);
+        }
+
+        // TOAST NOTIFICATION
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMsg').innerText = message;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 2500);
+        }
+
+        // TAB SWITCHING
+        function switchTab(tabKey) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-white', 'text-rose-600', 'shadow-xs');
+                btn.classList.add('text-slate-600');
+            });
+
+            document.getElementById(`tab-${tabKey}`).classList.add('active');
+            const activeBtn = document.getElementById(`tabBtn-${tabKey}`);
+            activeBtn.classList.add('bg-white', 'text-rose-600', 'shadow-xs');
+            activeBtn.classList.remove('text-slate-600');
+        }
+
+        // COUNTDOWN TIMER LOGIC
+        function updateCountdown() {
+            if (!window.appConfig || !window.appConfig.targetDate) return;
+            const target = new Date(window.appConfig.targetDate).getTime();
+            const now = new Date().getTime();
+            const diff = target - now;
+
+            if (diff <= 0) {
+                document.getElementById('cd-days').innerText = "00";
+                document.getElementById('cd-hours').innerText = "00";
+                document.getElementById('cd-minutes').innerText = "00";
+                document.getElementById('cd-seconds').innerText = "00";
+                return;
+            }
+
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+            document.getElementById('cd-days').innerText = days;
+            document.getElementById('cd-hours').innerText = hours < 10 ? '0' + hours : hours;
+            document.getElementById('cd-minutes').innerText = minutes < 10 ? '0' + minutes : minutes;
+            document.getElementById('cd-seconds').innerText = seconds < 10 ? '0' + seconds : seconds;
+        }
+
+        // RENDER ALL DATA TO UI
+        function renderAll() {
+            if (!window.appConfig) return;
+
+            // Header Info
+            const targetDateObj = new Date(window.appConfig.targetDate);
+            const monthYearStr = targetDateObj.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+            document.getElementById('headerTargetDateDisplay').innerText = monthYearStr;
+            document.getElementById('headerTargetBudgetDisplay').innerText = formatRupiah(window.appConfig.targetBudget);
+
+            // Calculations
+            const totalSaved = window.savingsData.reduce((acc, curr) => acc + Number(curr.amount), 0);
+            const totalAllocated = window.expensesData.reduce((acc, curr) => acc + Number(curr.amount), 0);
+            const remainingTarget = Math.max(0, window.appConfig.targetBudget - totalSaved);
+            const savingsPercent = Math.min(100, Math.round((totalSaved / window.appConfig.targetBudget) * 100));
+
+            const totalChecklist = window.checklistData.length;
+            const completedChecklist = window.checklistData.filter(i => i.done).length;
+            const checklistPercent = totalChecklist > 0 ? Math.round((completedChecklist / totalChecklist) * 100) : 0;
+
+            // Card 1: Target Budget
+            document.getElementById('cardTargetBudget').innerText = formatRupiah(window.appConfig.targetBudget);
+            document.getElementById('cardAllocatedBudget').innerText = formatRupiah(totalAllocated);
+
+            // Card 2: Total Tabungan
+            document.getElementById('cardTotalSavings').innerText = formatRupiah(totalSaved);
+            document.getElementById('cardRemainingSavings').innerText = formatRupiah(remainingTarget);
+
+            // Card 3: Progress Checklist
+            document.getElementById('cardChecklistPercent').innerText = `${checklistPercent}%`;
+            document.getElementById('cardChecklistCount').innerText = `${completedChecklist}/${totalChecklist} Selesai`;
+            document.getElementById('cardChecklistBar').style.width = `${checklistPercent}%`;
+            
+            let statusText = "On Track";
+            if(checklistPercent === 100) statusText = "Siap 100%! 🎉";
+            else if(checklistPercent < 30) statusText = "Tahap Awal";
+            document.getElementById('cardChecklistStatus').innerText = statusText;
+
+            // Card 4: Progress Tabungan
+            document.getElementById('cardSavingsPercent').innerText = `${savingsPercent}%`;
+            document.getElementById('cardDepositCount').innerText = `${window.savingsData.length} setoran`;
+            document.getElementById('cardSavingsBar').style.width = `${savingsPercent}%`;
+
+            // Render Tab Contents
+            renderSavingsTable();
+            renderExpensesList();
+            renderChecklistList();
+
+            // Refresh Icons
+            if (window.lucide) {
+                lucide.createIcons();
+            }
+        }
+
+        // RENDER SAVINGS TABLE
+        function renderSavingsTable() {
+            const tbody = document.getElementById('savingsTableBody');
+            tbody.innerHTML = '';
+
+            if (window.savingsData.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="text-center py-6 text-slate-400">
+                            Belum ada riwayat setoran. Klik tombol "+ Tambah Setoran" untuk memulai.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            const sorted = [...window.savingsData].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            sorted.forEach((item) => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50/80 transition text-slate-700";
+                tr.innerHTML = `
+                    <td class="py-3.5 px-4 sm:px-6 font-medium whitespace-nowrap">${formatDate(item.date)}</td>
+                    <td class="py-3.5 px-4 sm:px-6">${item.note}</td>
+                    <td class="py-3.5 px-4 sm:px-6 font-bold text-teal-700 whitespace-nowrap">${formatRupiah(item.amount)}</td>
+                    <td class="py-3.5 px-4 sm:px-6 text-center">
+                        <div class="flex items-center justify-center gap-2">
+                            <button onclick="editSavings('${item.id}')" class="p-1 text-slate-400 hover:text-teal-600 transition cursor-pointer" title="Edit">
+                                <i data-lucide="edit-3" class="w-4 h-4"></i>
+                            </button>
+                            <button onclick="deleteSavings('${item.id}')" class="p-1 text-slate-400 hover:text-rose-600 transition cursor-pointer" title="Hapus">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // RENDER EXPENSES LIST
+        function renderExpensesList() {
+            const container = document.getElementById('expenseCategoriesContainer');
+            container.innerHTML = '';
+
+            const categories = ["Venue & Catering", "Busana & Makeup", "Dekorasi & Dokumen", "Undangan & Souvenir", "Lain-Lain"];
+
+            categories.forEach(cat => {
+                const items = window.expensesData.filter(e => e.category === cat);
+                const subtotal = items.reduce((a, b) => a + Number(b.amount), 0);
+
+                const catBox = document.createElement('div');
+                catBox.className = "border border-slate-100 rounded-xl p-4 bg-slate-50/50";
+                
+                let itemsHtml = '';
+                if(items.length === 0) {
+                    itemsHtml = `<p class="text-xs text-slate-400 italic">Belum ada estimasi di kategori ini.</p>`;
+                } else {
+                    itemsHtml = items.map(item => `
+                        <div class="flex items-center justify-between py-2 border-b border-slate-100 last:border-0 text-xs sm:text-sm">
+                            <span class="text-slate-700 font-medium">${item.name}</span>
+                            <div class="flex items-center gap-3">
+                                <span class="font-semibold text-rose-700">${formatRupiah(item.amount)}</span>
+                                <button onclick="deleteExpense('${item.id}')" class="text-slate-300 hover:text-rose-500 transition cursor-pointer">
+                                    <i data-lucide="x-circle" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+
+                catBox.innerHTML = `
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="font-bold text-xs sm:text-sm text-slate-800 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+                            ${cat}
+                        </h3>
+                        <span class="text-xs font-bold text-rose-600 bg-rose-50 px-2.5 py-1 rounded-full">${formatRupiah(subtotal)}</span>
+                    </div>
+                    <div class="space-y-1 bg-white p-3 rounded-lg border border-slate-100">
+                        ${itemsHtml}
+                    </div>
+                `;
+
+                container.appendChild(catBox);
+            });
+        }
+
+        // RENDER CHECKLIST TIMELINE
+        function renderChecklistList() {
+            const container = document.getElementById('checklistTimelineContainer');
+            container.innerHTML = '';
+
+            const timelines = ["H-12 Bulan", "H-6 Bulan", "H-3 Bulan", "H-1 Bulan", "H-1 Minggu & Hari H"];
+
+            timelines.forEach(timeKey => {
+                const items = window.checklistData.filter(c => c.timeline === timeKey);
+
+                const section = document.createElement('div');
+                section.className = "border border-rose-100 rounded-2xl p-4 bg-white shadow-xs";
+
+                let itemsHtml = '';
+                if(items.length === 0) {
+                    itemsHtml = `<p class="text-xs text-slate-400 italic">Tidak ada item persiapan pada timeline ini.</p>`;
+                } else {
+                    itemsHtml = items.map(item => `
+                        <div class="flex items-center justify-between p-2.5 rounded-xl hover:bg-rose-50/50 transition">
+                            <label class="flex items-center gap-3 cursor-pointer flex-1">
+                                <input type="checkbox" ${item.done ? 'checked' : ''} onchange="toggleChecklist('${item.id}')" 
+                                       class="w-4 h-4 text-rose-600 rounded border-slate-300 focus:ring-rose-500 cursor-pointer">
+                                <span class="text-xs sm:text-sm ${item.done ? 'line-through text-slate-400 font-normal' : 'text-slate-700 font-semibold'}">
+                                    ${item.task}
+                                </span>
+                            </label>
+                            <button onclick="deleteChecklist('${item.id}')" class="text-slate-300 hover:text-rose-600 p-1 transition cursor-pointer">
+                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </div>
+                    `).join('');
+                }
+
+                section.innerHTML = `
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-xs font-bold bg-rose-100 text-rose-700 px-3 py-1 rounded-full">${timeKey}</span>
+                        <span class="text-xs text-slate-400 font-medium">${items.filter(i => i.done).length}/${items.length} Selesai</span>
+                    </div>
+                    <div class="space-y-1">
+                        ${itemsHtml}
+                    </div>
+                `;
+
+                container.appendChild(section);
+            });
+        }
+
+        // ACTIONS & HANDLERS
+
+        // Toggle checklist checkbox
+        function toggleChecklist(id) {
+            window.checklistData = window.checklistData.map(item => {
+                if(item.id === id) {
+                    return { ...item, done: !item.done };
+                }
+                return item;
+            });
+            window.saveDataToCloud();
+            showToast("Progress checklist berhasil diperbarui!");
+        }
+
+        // Save Savings
+        function handleSaveSavings(e) {
+            e.preventDefault();
+            const id = document.getElementById('savingsId').value;
+            const date = document.getElementById('savingsDate').value;
+            const note = document.getElementById('savingsNote').value;
+            const amount = Number(document.getElementById('savingsAmount').value);
+
+            if(id) {
+                window.savingsData = window.savingsData.map(s => s.id === id ? { id, date, note, amount } : s);
+            } else {
+                window.savingsData.push({ id: 's_' + Date.now(), date, note, amount });
+            }
+
+            window.saveDataToCloud();
+            closeModal('modalSavings');
+            showToast("Setoran tabungan tersimpan!");
+        }
+
+        function editSavings(id) {
+            const item = window.savingsData.find(s => s.id === id);
+            if(!item) return;
+            document.getElementById('savingsId').value = item.id;
+            document.getElementById('savingsDate').value = item.date;
+            document.getElementById('savingsNote').value = item.note;
+            document.getElementById('savingsAmount').value = item.amount;
+            document.getElementById('modalSavingsTitle').innerText = "Edit Setoran Tabungan";
+            openModal('modalSavings');
+        }
+
+        function deleteSavings(id) {
+            window.savingsData = window.savingsData.filter(s => s.id !== id);
+            window.saveDataToCloud();
+            showToast("Setoran berhasil dihapus!");
+        }
+
+        // Save Expense
+        function handleSaveExpense(e) {
+            e.preventDefault();
+            const category = document.getElementById('expenseCategory').value;
+            const name = document.getElementById('expenseName').value;
+            const amount = Number(document.getElementById('expenseAmount').value);
+
+            window.expensesData.push({ id: 'e_' + Date.now(), category, name, amount });
+            window.saveDataToCloud();
+            closeModal('modalExpense');
+            showToast("Item rincian biaya tersimpan!");
+        }
+
+        function deleteExpense(id) {
+            window.expensesData = window.expensesData.filter(e => e.id !== id);
+            window.saveDataToCloud();
+            showToast("Item biaya dihapus!");
+        }
+
+        // Save Checklist Item
+        function handleSaveChecklist(e) {
+            e.preventDefault();
+            const timeline = document.getElementById('checklistTimeline').value;
+            const task = document.getElementById('checklistTask').value;
+
+            window.checklistData.push({ id: 'c_' + Date.now(), timeline, task, done: false });
+            window.saveDataToCloud();
+            closeModal('modalChecklist');
+            showToast("Tugas baru ditambahkan ke checklist!");
+        }
+
+        function deleteChecklist(id) {
+            window.checklistData = window.checklistData.filter(c => c.id !== id);
+            window.saveDataToCloud();
+            showToast("Item checklist dihapus!");
+        }
+
+        // Save Target Settings
+        function handleSaveSettings(e) {
+            e.preventDefault();
+            window.appConfig.targetBudget = Number(document.getElementById('settingTargetBudget').value);
+            window.appConfig.targetDate = document.getElementById('settingTargetDate').value;
+            window.saveDataToCloud();
+            closeModal('modalSettings');
+            showToast("Pengaturan target diperbarui!");
+        }
+
+        // Join Existing Wedding ID
+        function handleJoinWedding(e) {
+            e.preventDefault();
+            const inputId = document.getElementById('joinWeddingIdInput').value.trim().toUpperCase();
+            if (inputId) {
+                const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?weddingId=' + inputId;
+                window.location.href = newUrl;
+            }
+        }
+
+        function copyShareLink() {
+            const shareUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?weddingId=' + window.currentWeddingId;
+            
+            const tempInput = document.createElement("input");
+            tempInput.value = shareUrl;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand("copy");
+            document.body.removeChild(tempInput);
+
+            showToast("Tautan ID Pasangan berhasil disalin!");
+        }
+
+        // MODAL UTILS
+        function openModal(id) {
+            if(id === 'modalSettings') {
+                document.getElementById('settingTargetBudget').value = window.appConfig.targetBudget;
+                document.getElementById('settingTargetDate').value = window.appConfig.targetDate;
+            } else if(id === 'modalSavings' && !document.getElementById('savingsId').value) {
+                document.getElementById('modalSavingsTitle').innerText = "Tambah Setoran Tabungan";
+                document.getElementById('savingsDate').value = new Date().toISOString().split('T')[0];
+            }
+            document.getElementById(id).classList.remove('hidden');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+            if(id === 'modalSavings') {
+                document.getElementById('savingsId').value = '';
+                document.getElementById('savingsForm').reset();
+            }
+        }
+    </script>
+</body>
+</html>
